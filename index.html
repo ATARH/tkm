@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест конституционного типа FOHOW</title>
+    <!-- Подключаем Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-hover: #0d5f59;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --success-bg: #ccfbf1;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px 16px;
+            line-height: 1.5;
+        }
+
+        /* Основной контейнер */
+        .ctest-app {
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .ctest-app--ready {
+            opacity: 1;
+        }
+
+        .ctest-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Верхняя панель (прогресс, шкала, кнопки) */
+        .ctest-toolbar {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .ctest-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 150px;
+        }
+        .ctest-progress__label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .ctest-progress strong {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        .ctest-progress meter {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            appearance: none;
+        }
+        .ctest-progress meter::-webkit-meter-bar {
+            background: #e2e8f0;
+            border: none;
+            border-radius: 4px;
+        }
+        .ctest-progress meter::-webkit-meter-optimum-value {
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .ctest-scale {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.85rem;
+            background: #f8fafc;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .ctest-scale span {
+            color: var(--text-muted);
+        }
+        .ctest-scale strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .ctest-form-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ctest-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .ctest-button:hover:not(:disabled) {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+        .ctest-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .ctest-button--primary {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .ctest-button--primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        /* Панель выбора пола */
+        .ctest-sex-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+        .ctest-sex-panel h2 {
+            margin: 0 0 8px;
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+        .ctest-sex-panel p {
+            margin: 0 0 20px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .ctest-sex-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+        .ctest-sex-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 12px 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .ctest-sex-option:hover {
+            border-color: var(--primary);
+            background: #f0fdfa;
+        }
+        .ctest-sex-option input {
+            display: none;
+        }
+        .ctest-sex-option input:checked + span {
+            color: var(--primary);
+        }
+        .ctest-sex-option:has(input:checked) {
+            border-color: var(--primary);
+            background: #f0fdfa;
+        }
+        .ctest-sex-status {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Секции (Лист 1, Лист 2) */
+        .ctest-sheet {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .ctest-sheet__head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .ctest-sheet__head h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+        .ctest-sheet__head span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .ctest-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        /* Карточка типа */
+        .ctest-type {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: border-color 0.3s;
+        }
+        .ctest-type.is-complete {
+            border-color: var(--primary);
+        }
+        .ctest-type__head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .ctest-type__head h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        .ctest-type__count {
+            font-size: 0.8rem;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: var(--text-muted);
+        }
+        .ctest-type__note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+            font-style: italic;
+        }
+
+        /* Список вопросов */
+        .ctest-question-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .ctest-question {
+            display: grid;
+            grid-template-columns: 1fr 50px;
+            gap: 8px 12px;
+            align-items: start;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .ctest-question.is-active {
+            background: #f0fdfa;
+        }
+        .ctest-question.is-disabled {
+            opacity: 0.5;
+        }
+        .ctest-question__label {
+            display: flex;
+            gap: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            grid-column: 1 / 2;
+        }
+        .ctest-question__number {
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 16px;
+        }
+        .ctest-answer {
+            width: 44px;
+            height: 44px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.2s;
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            align-self: start;
+        }
+        .ctest-answer:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2);
+        }
+        .ctest-answer.is-invalid {
+            border-color: var(--danger);
+            background: var(--danger-bg);
+        }
+        .ctest-answer:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+        .ctest-field-error {
+            grid-column: 1 / -1;
+            font-size: 0.8rem;
+            color: var(--danger);
+            min-height: 16px;
+        }
+
+        /* Итоги по карточке */
+        .ctest-type__total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        .ctest-type__total output {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        .ctest-type__missing {
+            font-size: 0.8rem;
+            text-align: right;
+            color: var(--text-muted);
+        }
+
+        /* Блок результатов */
+        .ctest-result {
+            background: #f0fdfa;
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-top: 20px;
+            box-shadow: var(--shadow);
+        }
+        .ctest-result__head {
+            margin-bottom: 24px;
+        }
+        .ctest-result__kicker {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+        .ctest-result__head h2 {
+            margin: 4px 0 8px;
+            font-size: 1.6rem;
+        }
+        .ctest-result__head p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .ctest-result__layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        @media (min-width: 992px) {
+            .ctest-result__layout {
+                grid-template-columns: 3fr 2fr;
+            }
+        }
+        
+        .ctest-result-table-wrap {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .ctest-result-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .ctest-result-table th, .ctest-result-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .ctest-result-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .ctest-result-table tr:last-child td {
+            border-bottom: none;
+        }
+        .ctest-result-table strong {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .ctest-result__top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .ctest-top-card {
+            background: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .ctest-top-card span {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .ctest-top-card h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+        .ctest-top-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .ctest-result__send {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .ctest-result__send h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .ctest-result__send textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            background: #f8fafc;
+            color: var(--text-main);
+        }
+        .ctest-result__buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .ctest-copy-status {
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* Сообщение о статусе формы */
+        .ctest-status {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Контейнер, в который JavaScript отрисует весь тест -->
+    <div id="constitutionTestApp" data-max-link="https://max.ru/join/Ds3RHIcgS1KrI19Wu26PmLulMFCn0S1L_cqUgP4mX2k"></div>
+
+    <!-- Скрипт теста -->
+    <script>
+        (function () {
+            "use strict";
+
+            var DEFAULT_MAX_LINK = "https://max.ru/join/Ds3RHIcgS1KrI19Wu26PmLulMFCn0S1L_cqUgP4mX2k";
+
+            var groups = [
+                {
+                    id: "qi-stagnation",
+                    sheet: 1,
+                    title: "Застой Ци",
+                    shortTitle: "Застой Ци",
+                    leadText: "Больше всего выражены признаки эмоционального и энергетического застоя.",
+                    questions: [
+                        "Вы часто ощущаете чувство грусти и тоски?",
+                        "У вас возникает нервозность и чувство беспокойства?",
+                        "Наблюдается проявление чрезмерной сентиментальности и эмоциональной хрупкости?",
+                        "Вы подвержены страхам или чувствуете испуг?",
+                        "Ощущаете распирающую боль в области молочных желез и ребер?",
+                        "Вы часто вздыхаете без причины?",
+                        "Возникает ощущение «комка в горле», который не получается сплюнуть или проглотить?"
+                    ]
+                },
+                {
+                    id: "blood-stasis",
+                    sheet: 1,
+                    title: "Застой крови",
+                    shortTitle: "Застой крови",
+                    leadText: "Больше всего выражены признаки, которые в ТКМ относят к застою крови.",
+                    questions: [
+                        "Появляются ли внезапно у вас на коже синяки или подкожные кровоизлияния?",
+                        "Появляются ли на щеках тонкие красные линии?",
+                        "Появляются различные боли в теле?",
+                        "Наблюдается ли потемнение цвета кожи лица или возникновение бурых пятнышек, пигментации?",
+                        "Появляются темные круги под глазами?",
+                        "Появляется ли у вас забывчивость?",
+                        "Темнеет ли оттенок губ?"
+                    ]
+                },
+                {
+                    id: "damp-heat",
+                    sheet: 1,
+                    title: "Сырой жар",
+                    shortTitle: "Сырой жар",
+                    leadText: "Больше всего выражены признаки сочетания влажности и жара.",
+                    questions: [
+                        "Возникает ли у вас ощущение жирной кожи или жирный блеск кожи лица или носа?",
+                        "Появляются ли у вас прыщи и высыпания?",
+                        "Возникает ли чувство горечи во рту или неприятный запах изо рта?",
+                        "Появляется ли у вас липкий стул, ощущение неполного опорожнения?",
+                        "Возникает ощущение жара в уретре в момент мочеиспускания, при этом урина приобретает темный цвет?",
+                        { text: "Бели приобретают желтоватый оттенок? Вопрос для женщин.", sex: "female" },
+                        { text: "Появляется сырость и влажность в области мошонки? Вопрос для мужчин.", sex: "male" }
+                    ]
+                },
+                {
+                    id: "phlegm-dampness",
+                    sheet: 1,
+                    title: "Флегма-влага",
+                    shortTitle: "Флегма-влага",
+                    leadText: "Больше всего выражены признаки накопления влаги и тяжести.",
+                    questions: [
+                        "Ощущается ли стеснение в груди или вздутие живота?",
+                        "Ощущается недомогание либо отсутствие легкости в теле?",
+                        "Имеются рыхлые жировые отложения в области живота?",
+                        "Появляется жирный блеск кожи на лбу?",
+                        "Опухает верхнее веко, появляется легкое вздутие?",
+                        "Возникает ощущение вязкости во рту?",
+                        "У вас обычно много мокроты, вы часто чувствуете застой мокроты в горле?",
+                        "Появляется толстый и липкий налет на языке?"
+                    ]
+                },
+                {
+                    id: "balanced",
+                    sheet: 1,
+                    title: "Нормальный",
+                    shortTitle: "Нормальный",
+                    leadText: "По анкете больше выражены признаки сбалансированной конституции.",
+                    questions: [
+                        { text: "Вы бодры и энергичны?" },
+                        { text: "Вы быстро устаете?" },
+                        { text: "У вас слабый голос?" },
+                        { text: "Испытываете чувство грусти?" },
+                        { text: "Вы переносите холод хуже, чем другие люди?" },
+                        { text: "Вы адаптируетесь к изменениям природы и социальной среды?" },
+                        { text: "Имеется ли склонность к бессоннице?" },
+                        { text: "Вы забывчивы?" }
+                    ]
+                },
+                {
+                    id: "qi-deficiency",
+                    sheet: 2,
+                    title: "Недостаточность Ци",
+                    shortTitle: "Недостаточность Ци",
+                    leadText: "Больше всего выражены признаки недостаточности Ци.",
+                    questions: [
+                        "Вы быстро устаете?",
+                        "Возникает ли прерывистое дыхание, учащенное дыхание или затрудненное дыхание?",
+                        "У вас возникает учащенное сердцебиение?",
+                        "Возникает ли головокружение в обычном состоянии или когда вы встаете?",
+                        "Вы более склонны к простудным заболеваниям, чем другие люди?",
+                        "Вы предпочитаете тишину и вам не хочется говорить?",
+                        "У вас слабый голос?",
+                        "Вы сильно потеете при движении?"
+                    ]
+                },
+                {
+                    id: "special",
+                    sheet: 2,
+                    title: "Особый тип",
+                    shortTitle: "Особый тип",
+                    leadText: "Больше всего выражены признаки особого, чувствительного типа.",
+                    questions: [
+                        "Вы часто чихаете, даже если не простужены?",
+                        "У вас заложен нос, когда вы не простужены?",
+                        "Наблюдается ли у вас проявление астмы из-за сезонных и температурных изменений, а также из-за посторонних запахов?",
+                        "У вас есть склонность к аллергии на лекарства, продукты питания, запахи, пыльцу или сезонные изменения климата?",
+                        "У вас на коже появляются высыпания: крапивница, дерматоз, сыпь?",
+                        "Бывала ли у вас багровая экзема, пурпура, из-за аллергии: точечные кровоизлияния и пятнышки сиреневого цвета?",
+                        "Если вы слегка чешете кожу, она сразу краснеет, на коже остаются следы?"
+                    ]
+                },
+                {
+                    id: "yin-deficiency",
+                    sheet: 2,
+                    title: "Недостаточность Инь",
+                    shortTitle: "Недостаточность Инь",
+                    leadText: "Больше всего выражены признаки недостаточности Инь.",
+                    questions: [
+                        "Ощущаете ли вы жар на ладонях и ступнях?",
+                        "Чувствуете ли вы жар в теле и на лице?",
+                        "Сохнут ли у вас кожа и губы?",
+                        "Замечаете ли вы, что ваши губы краснее, чем у других людей?",
+                        "У вас часто бывают запоры или сухой стул?",
+                        "У вас полностью или частично краснеет лицо?",
+                        "Вы чувствуете сухость в глазах?",
+                        "У вас появляется астенический пот во время активности?"
+                    ]
+                },
+                {
+                    id: "yang-deficiency",
+                    sheet: 2,
+                    title: "Недостаточность Ян",
+                    shortTitle: "Недостаточность Ян",
+                    leadText: "Больше всего выражены признаки недостаточности Ян.",
+                    questions: [
+                        "У вас появляется холод в конечностях?",
+                        "У вас появляется холод в желудке, спине, пояснице или коленях?",
+                        "Вам часто становится холодно и вы одеваетесь теплее, чем другие?",
+                        "Вы переносите холод хуже, чем другие: зимний холод, холод от кондиционера или вентилятора?",
+                        "Вы более склонны к простудным заболеваниям, чем другие люди?",
+                        "Вы чувствуете дискомфорт при употреблении холодной пищи и напитков или не переносите холодную пищу и напитки?",
+                        "У вас часто случается диарея после употребления холодной пищи и напитков?"
+                    ]
+                }
+            ];
+
+            var scaleLabels = {
+                1: "нет",
+                2: "редко",
+                3: "иногда",
+                4: "часто",
+                5: "постоянно"
+            };
+
+            var groupById = groups.reduce(function (acc, group) {
+                acc[group.id] = group;
+                return acc;
+            }, {});
+
+            function normalizeQuestion(question) {
+                if (typeof question === "string") {
+                    return { text: question, sex: "" };
+                }
+                return {
+                    text: question.text,
+                    sex: question.sex || ""
+                };
+            }
+
+            groups.forEach(function (group) {
+                group.questions = group.questions.map(normalizeQuestion);
+            });
+
+            var app = document.getElementById("constitutionTestApp");
+            if (!app) {
+                return;
+            }
+
+            var maxLink = app.getAttribute("data-max-link") || DEFAULT_MAX_LINK;
+            var totalQuestionCount = groups.reduce(function (sum, group) {
+                return sum + group.questions.length;
+            }, 0);
+            var submitted = false;
+            var selectedSex = "";
+
+            function escapeHtml(value) {
+                return String(value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function fieldId(groupId, index) {
+                return "ctest-" + groupId + "-" + (index + 1);
+            }
+
+            function renderScale() {
+                return Object.keys(scaleLabels)
+                    .map(function (score) {
+                        return '<span><strong>' + score + '</strong> ' + escapeHtml(scaleLabels[score]) + "</span>";
+                    })
+                    .join("");
+            }
+
+            function renderGroup(group) {
+                var questions = group.questions
+                    .map(function (question, index) {
+                        var id = fieldId(group.id, index);
+                        var sexAttr = question.sex ? ' data-sex="' + question.sex + '"' : "";
+                        var sexClass = question.sex ? " ctest-question--sex-dependent" : "";
+                        return [
+                            '<li class="ctest-question' + sexClass + '"' + sexAttr + ">",
+                            '<label class="ctest-question__label" for="' + id + '">',
+                            '<span class="ctest-question__number">' + (index + 1) + "</span>",
+                            '<span>' + escapeHtml(question.text) + "</span>",
+                            "</label>",
+                            '<input class="ctest-answer" id="' + id + '" name="' + id + '" type="text" inputmode="numeric" autocomplete="off" maxlength="1" pattern="[1-5]" required aria-describedby="' + id + '-error" data-group="' + group.id + '" data-index="' + index + '"' + sexAttr + '>',
+                            '<span class="ctest-field-error" id="' + id + '-error" role="alert" aria-live="polite"></span>',
+                            "</li>"
+                        ].join("");
+                    })
+                    .join("");
+
+                return [
+                    '<article class="ctest-type" data-group-card="' + group.id + '">',
+                    '<div class="ctest-type__head">',
+                    "<h3>" + escapeHtml(group.title) + "</h3>",
+                    '<span class="ctest-type__count">' + group.questions.length + " вопросов</span>",
+                    "</div>",
+                    group.note ? '<p class="ctest-type__note">' + escapeHtml(group.note) + "</p>" : "",
+                    '<ol class="ctest-question-list">',
+                    questions,
+                    "</ol>",
+                    '<div class="ctest-type__total">',
+                    "<span>ВСЕГО БАЛЛОВ:</span>",
+                    '<output data-total-for="' + group.id + '">0</output>',
+                    "</div>",
+                    '<div class="ctest-type__missing" data-missing-for="' + group.id + '"></div>',
+                    "</article>"
+                ].join("");
+            }
+
+            function renderSheet(sheetNumber, title, modifier) {
+                return [
+                    '<section class="ctest-sheet" aria-labelledby="ctest-sheet-' + sheetNumber + '-title">',
+                    '<div class="ctest-sheet__head">',
+                    '<h2 id="ctest-sheet-' + sheetNumber + '-title">' + escapeHtml(title) + "</h2>",
+                    '<span>' + (sheetNumber === 1 ? "5 значений «Всего баллов»" : "4 значения «Всего баллов»") + "</span>",
+                    "</div>",
+                    '<div class="ctest-grid ' + modifier + '">',
+                    groups.filter(function (group) { return group.sheet === sheetNumber; }).map(renderGroup).join(""),
+                    "</div>",
+                    "</section>"
+                ].join("");
+            }
+
+            function renderApp() {
+                app.innerHTML = [
+                    '<form class="ctest-form" id="constitutionTestForm" novalidate>',
+                    '<section class="ctest-toolbar" aria-label="Панель теста">',
+                    '<div class="ctest-progress">',
+                    '<span class="ctest-progress__label">Заполнено</span>',
+                    '<strong><span data-progress-current>0</span> / ' + totalQuestionCount + "</strong>",
+                    '<meter min="0" max="' + totalQuestionCount + '" value="0" data-progress-meter></meter>',
+                    "</div>",
+                    '<div class="ctest-scale" aria-label="Шкала ответов">' + renderScale() + "</div>",
+                    '<div class="ctest-form-actions">',
+                    '<button type="submit" class="ctest-button ctest-button--primary" data-result-button disabled><i class="fas fa-chart-simple" aria-hidden="true"></i><span>Показать результат</span></button>',
+                    '<button type="button" class="ctest-button" data-reset-button><i class="fas fa-rotate-left" aria-hidden="true"></i><span>Очистить</span></button>',
+                    "</div>",
+                    '<p class="ctest-status" data-form-status aria-live="polite">Сначала выберите пол. После выбора откроются поля анкеты.</p>',
+                    "</section>",
+                    '<section class="ctest-sex-panel" aria-labelledby="ctest-sex-title">',
+                    '<div>',
+                    '<h2 id="ctest-sex-title">Сначала выберите пол</h2>',
+                    '<p>Это обязательное поле. После выбора откроются вопросы анкеты, а неподходящий вопрос в блоке «Сырой жар» получит 0 и не добавит баллы.</p>',
+                    "</div>",
+                    '<div class="ctest-sex-options" role="radiogroup" aria-labelledby="ctest-sex-title">',
+                    '<label class="ctest-sex-option"><input type="radio" name="ctest-sex" value="female" required><span><i class="fas fa-venus" aria-hidden="true"></i> Женщина</span></label>',
+                    '<label class="ctest-sex-option"><input type="radio" name="ctest-sex" value="male" required><span><i class="fas fa-mars" aria-hidden="true"></i> Мужчина</span></label>',
+                    "</div>",
+                    '<p class="ctest-sex-status" data-sex-status aria-live="polite">Выберите пол, чтобы открыть поля анкеты.</p>',
+                    "</section>",
+                    renderSheet(1, "Лист 1", "ctest-grid--five"),
+                    renderSheet(2, "Лист 2", "ctest-grid--four"),
+                    '<section class="ctest-result" id="constitutionTestResult" hidden aria-live="polite">',
+                    '<div class="ctest-result__head">',
+                    '<div><span class="ctest-result__kicker">Итог</span><h2 data-result-title>Результат теста</h2></div>',
+                    '<p data-result-summary></p>',
+                    "</div>",
+                    '<div class="ctest-result__layout">',
+                    '<div class="ctest-result__main">',
+                    '<h3>9 значений «Всего баллов»</h3>',
+                    '<div class="ctest-result-table-wrap">',
+                    '<table class="ctest-result-table">',
+                    "<thead><tr><th>Лист</th><th>Конституционный тип</th><th>Всего баллов</th><th>Индекс</th></tr></thead>",
+                    '<tbody data-result-table></tbody>',
+                    "</table>",
+                    "</div>",
+                    '<div class="ctest-result__top" data-result-top></div>',
+                    "</div>",
+                    '<aside class="ctest-result__send">',
+                    '<h3>Для сообщения в MAX</h3>',
+                    '<textarea data-result-message readonly rows="12" aria-label="Готовый текст результата для MAX"></textarea>',
+                    '<div class="ctest-result__buttons">',
+                    '<button type="button" class="ctest-button ctest-button--primary" data-copy-result><i class="fas fa-copy" aria-hidden="true"></i><span>Скопировать итог</span></button>',
+                    '<a class="ctest-button" href="' + escapeHtml(maxLink) + '" target="_blank" rel="noopener noreferrer nofollow"><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i><span>Открыть MAX</span></a>',
+                    "</div>",
+                    '<p class="ctest-copy-status" data-copy-status aria-live="polite"></p>',
+                    "</aside>",
+                    "</div>",
+                    "</section>",
+                    "</form>"
+                ].join("");
+                app.classList.add("ctest-app--ready");
+            }
+
+            function getInputValue(input) {
+                var value = input.value.trim();
+                if (input.disabled && input.getAttribute("data-auto-value") === "0" && value === "0") {
+                    return 0;
+                }
+                return /^[1-5]$/.test(value) ? Number(value) : null;
+            }
+
+            function getScoredValue(input) {
+                var value = getInputValue(input);
+                if (value === null) {
+                    return null;
+                }
+                return value;
+            }
+
+            function setInputError(input, message) {
+                var error = document.getElementById(input.id + "-error");
+                input.classList.add("is-invalid");
+                input.setAttribute("aria-invalid", "true");
+                if (error) {
+                    error.textContent = message;
+                }
+            }
+
+            function clearInputError(input) {
+                var error = document.getElementById(input.id + "-error");
+                input.classList.remove("is-invalid");
+                input.removeAttribute("aria-invalid");
+                if (error) {
+                    error.textContent = "";
+                }
+            }
+
+            function getQuestionRow(input) {
+                return input && input.closest ? input.closest(".ctest-question") : null;
+            }
+
+            function setActiveQuestion(input) {
+                app.querySelectorAll(".ctest-question.is-active").forEach(function (row) {
+                    row.classList.remove("is-active");
+                });
+                var row = getQuestionRow(input);
+                if (row) {
+                    row.classList.add("is-active");
+                }
+            }
+
+            function clearActiveQuestion(input) {
+                var row = getQuestionRow(input);
+                if (row) {
+                    row.classList.remove("is-active");
+                }
+            }
+
+            function validateInput(input, showMissing) {
+                if (input.disabled && input.getAttribute("data-auto-value") === "0" && input.value.trim() === "0") {
+                    clearInputError(input);
+                    return true;
+                }
+                if (input.disabled && input.value.trim() === "") {
+                    return false;
+                }
+                var value = input.value.trim();
+                if (value === "") {
+                    if (showMissing) {
+                        setInputError(input, "Заполните поле цифрой от 1 до 5.");
+                    } else {
+                        clearInputError(input);
+                    }
+                    return false;
+                }
+                if (!/^[1-5]$/.test(value)) {
+                    setInputError(input, "Можно ввести только цифру 1, 2, 3, 4 или 5.");
+                    return false;
+                }
+                clearInputError(input);
+                return true;
+            }
+
+            function isSexSelected() {
+                return selectedSex === "female" || selectedSex === "male";
+            }
+
+            function setSexSelection(sex) {
+                selectedSex = sex === "female" || sex === "male" ? sex : "";
+                app.querySelectorAll('input[name="ctest-sex"]').forEach(function (radio) {
+                    radio.checked = radio.value === selectedSex;
+                });
+                applySexFieldState();
+            }
+
+            function syncSexFromAnswer(input) {
+                var inputSex = input.getAttribute("data-sex");
+                if (!inputSex || getInputValue(input) === null) {
+                    return;
+                }
+                setSexSelection(inputSex);
+            }
+
+            function applySexFieldState() {
+                app.querySelectorAll(".ctest-answer").forEach(function (input) {
+                    var inputSex = input.getAttribute("data-sex");
+                    var row = getQuestionRow(input);
+                    var shouldDisable = !isSexSelected() || (inputSex && inputSex !== selectedSex);
+                    input.disabled = shouldDisable;
+                    input.setAttribute("aria-disabled", String(shouldDisable));
+                    if (!isSexSelected()) {
+                        if (input.getAttribute("data-auto-value") === "0") {
+                            input.value = "";
+                        }
+                        input.removeAttribute("data-auto-value");
+                        clearInputError(input);
+                    } else if (inputSex && inputSex !== selectedSex) {
+                        input.value = "0";
+                        input.setAttribute("data-auto-value", "0");
+                        clearInputError(input);
+                    } else {
+                        if (input.getAttribute("data-auto-value") === "0") {
+                            input.value = "";
+                        }
+                        input.removeAttribute("data-auto-value");
+                    }
+                    if (row) {
+                        row.classList.toggle("is-disabled", shouldDisable);
+                        row.classList.toggle("is-auto", shouldDisable && isSexSelected() && Boolean(inputSex));
+                    }
+                });
+                var sexStatus = app.querySelector("[data-sex-status]");
+                if (sexStatus) {
+                    sexStatus.textContent = isSexSelected()
+                        ? "Поля анкеты открыты. Неподходящий вопрос в блоке «Сырой жар» автоматически получает 0 и не добавляет баллы."
+                        : "Выберите пол, чтобы открыть поля анкеты.";
+                }
+            }
+
+            function computeTotals() {
+                var totals = {};
+                groups.forEach(function (group) {
+                    totals[group.id] = {
+                        id: group.id,
+                        title: group.title,
+                        shortTitle: group.shortTitle,
+                        sheet: group.sheet,
+                        count: group.questions.length,
+                        total: 0,
+                        rawTotal: 0,
+                        max: 0,
+                        min: 0,
+                        answered: 0,
+                        complete: false,
+                        converted: 0
+                    };
+                });
+                app.querySelectorAll(".ctest-answer").forEach(function (input) {
+                    var groupId = input.getAttribute("data-group");
+                    var value = getInputValue(input);
+                    var scored = getScoredValue(input);
+                    if (value === null || scored === null) {
+                        return;
+                    }
+                    totals[groupId].rawTotal += value;
+                    totals[groupId].total += scored;
+                    totals[groupId].answered += 1;
+                    if (!(input.disabled && input.getAttribute("data-auto-value") === "0")) {
+                        totals[groupId].min += 1;
+                        totals[groupId].max += 5;
+                    }
+                });
+                Object.keys(totals).forEach(function (groupId) {
+                    var item = totals[groupId];
+                    var range = item.max - item.min;
+                    item.complete = item.answered === item.count;
+                    item.converted = item.complete && range > 0 ? Math.round(((item.total - item.min) / range) * 1000) / 10 : 0;
+                });
+                return totals;
+            }
+
+            function updateState() {
+                var inputs = Array.prototype.slice.call(app.querySelectorAll(".ctest-answer"));
+                var validCount = inputs.reduce(function (sum, input) {
+                    return sum + (getInputValue(input) !== null ? 1 : 0);
+                }, 0);
+                var totals = computeTotals();
+                var allFieldsValid = validCount === totalQuestionCount;
+                var allValid = allFieldsValid && isSexSelected();
+                var current = app.querySelector("[data-progress-current]");
+                var meter = app.querySelector("[data-progress-meter]");
+                var resultButton = app.querySelector("[data-result-button]");
+                var status = app.querySelector("[data-form-status]");
+                if (current) {
+                    current.textContent = validCount;
+                }
+                if (meter) {
+                    meter.value = validCount;
+                }
+                if (resultButton) {
+                    resultButton.disabled = !allValid;
+                }
+                if (status) {
+                    status.textContent = !isSexSelected()
+                        ? "Сначала выберите пол. После выбора откроются поля анкеты."
+                        : allValid
+                        ? "Все поля заполнены. Можно смотреть результат."
+                        : "Заполните оставшиеся поля цифрами от 1 до 5. Если вопрос не относится к вам, поставьте 1.";
+                }
+                Object.keys(totals).forEach(function (groupId) {
+                    var totalOutput = app.querySelector('[data-total-for="' + groupId + '"]');
+                    var missingOutput = app.querySelector('[data-missing-for="' + groupId + '"]');
+                    var card = app.querySelector('[data-group-card="' + groupId + '"]');
+                    var item = totals[groupId];
+                    var missing = item.count - item.answered;
+                    if (totalOutput) {
+                        totalOutput.textContent = item.total;
+                    }
+                    if (missingOutput) {
+                        missingOutput.textContent = missing > 0 ? "Не заполнено: " + missing : "Заполнено";
+                    }
+                    if (card) {
+                        card.classList.toggle("is-complete", missing === 0);
+                    }
+                });
+                inputs.forEach(function (input) {
+                    var row = getQuestionRow(input);
+                    if (row) {
+                        row.classList.toggle("has-value", getInputValue(input) !== null);
+                    }
+                });
+            }
+
+            function validateAll(showMissing) {
+                var inputs = Array.prototype.slice.call(app.querySelectorAll(".ctest-answer"));
+                var firstInvalid = null;
+                var allValid = true;
+                inputs.forEach(function (input) {
+                    var valid = validateInput(input, showMissing);
+                    if (!valid && !firstInvalid) {
+                        firstInvalid = input;
+                    }
+                    allValid = allValid && valid;
+                });
+                return { allValid: allValid, firstInvalid: firstInvalid };
+            }
+
+            function getLevel(percent) {
+                if (percent >= 75) {
+                    return "высокая выраженность";
+                }
+                if (percent >= 50) {
+                    return "выраженная тенденция";
+                }
+                if (percent >= 25) {
+                    return "умеренная тенденция";
+                }
+                return "низкая выраженность";
+            }
+
+            function chooseLead(totals) {
+                var list = groups.map(function (group) { return totals[group.id]; });
+                var balanced = totals.balanced;
+                var deviations = list
+                    .filter(function (item) { return item.id !== "balanced"; })
+                    .sort(function (a, b) { return b.converted - a.converted; });
+                var topDeviation = deviations[0];
+                if (balanced.converted >= 70 && topDeviation.converted < 45) {
+                    return { lead: balanced, topDeviations: deviations.slice(0, 3), balanced: true };
+                }
+                return { lead: topDeviation, topDeviations: deviations.slice(0, 3), balanced: false };
+            }
+
+            function renderResultTable(totals) {
+                return groups.map(function (group) {
+                    var item = totals[group.id];
+                    return [
+                        "<tr>",
+                        "<td>Лист " + item.sheet + "</td>",
+                        "<td>" + escapeHtml(item.title) + "</td>",
+                        "<td><strong>" + item.total + "</strong> из " + item.max + "</td>",
+                        "<td>" + item.converted.toFixed(1).replace(".", ",") + "%</td>",
+                        "</tr>"
+                    ].join("");
+                }).join("");
+            }
+
+            function buildResultMessage(totals, leadInfo) {
+                var date = new Date().toLocaleString("ru-RU", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+                var lines = [
+                    "Тест конституционного типа FOHOW",
+                    "Дата заполнения: " + date,
+                    "",
+                    "Итоговые баллы:",
+                    "Лист 1:"
+                ];
+                groups.filter(function (group) { return group.sheet === 1; }).forEach(function (group) {
+                    var item = totals[group.id];
+                    lines.push("- " + item.title + ": " + item.total + " из " + item.max + " (" + item.converted.toFixed(1).replace(".", ",") + "%)");
+                });
+                lines.push("Лист 2:");
+                groups.filter(function (group) { return group.sheet === 2; }).forEach(function (group) {
+                    var item = totals[group.id];
+                    lines.push("- " + item.title + ": " + item.total + " из " + item.max + " (" + item.converted.toFixed(1).replace(".", ",") + "%)");
+                });
+                lines.push("");
+                lines.push("Ведущий результат: " + leadInfo.lead.title + " - " + leadInfo.lead.total + " из " + leadInfo.lead.max + " (" + leadInfo.lead.converted.toFixed(1).replace(".", ",") + "%).");
+                lines.push("Прошу специалиста пояснить, что означает итоговый балл и какие шаги лучше обсудить.");
+                return lines.join("\n");
+            }
+
+            function renderResults() {
+                var totals = computeTotals();
+                var leadInfo = chooseLead(totals);
+                var leadGroup = groupById[leadInfo.lead.id];
+                var result = app.querySelector("#constitutionTestResult");
+                var title = app.querySelector("[data-result-title]");
+                var summary = app.querySelector("[data-result-summary]");
+                var table = app.querySelector("[data-result-table]");
+                var top = app.querySelector("[data-result-top]");
+                var message = app.querySelector("[data-result-message]");
+                if (title) {
+                    title.textContent = "Ведущий результат: " + leadInfo.lead.title;
+                }
+                if (summary) {
+                    summary.textContent = leadInfo.balanced
+                        ? "Высокий балл по нормальному типу и более низкие значения по остальным шкалам обычно указывают на более сбалансированную картину по этой анкете."
+                        : leadGroup.leadText + " Используйте результат как ориентир для разговора со специалистом.";
+                }
+                if (table) {
+                    table.innerHTML = renderResultTable(totals);
+                }
+                if (top) {
+                    top.innerHTML = leadInfo.topDeviations.map(function (item, index) {
+                        return [
+                            '<article class="ctest-top-card">',
+                            "<span>" + (index + 1) + "</span>",
+                            "<h4>" + escapeHtml(item.title) + "</h4>",
+                            "<p>" + item.total + " из " + item.max + ", " + getLevel(item.converted) + "</p>",
+                            "</article>"
+                        ].join("");
+                    }).join("");
+                }
+                if (message) {
+                    message.value = buildResultMessage(totals, leadInfo);
+                }
+                if (result) {
+                    result.hidden = false;
+                    result.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }
+
+            function scrollQuestionIntoView(input, behavior) {
+                var row = getQuestionRow(input);
+                if (!row) {
+                    return;
+                }
+                requestAnimationFrame(function () {
+                    row.scrollIntoView({
+                        behavior: behavior || "smooth",
+                        block: "center",
+                        inline: "nearest"
+                    });
+                });
+            }
+
+            function focusInput(input, behavior) {
+                if (!input) {
+                    return;
+                }
+                try {
+                    input.focus({ preventScroll: true });
+                } catch (_) {
+                    input.focus();
+                }
+                scrollQuestionIntoView(input, behavior);
+            }
+
+            function focusRelativeInput(currentInput, direction) {
+                var inputs = Array.prototype.slice.call(app.querySelectorAll(".ctest-answer:not(:disabled)"));
+                var index = inputs.indexOf(currentInput);
+                var targetIndex = index + direction;
+                if (index >= 0 && targetIndex >= 0 && targetIndex < inputs.length) {
+                    focusInput(inputs[targetIndex]);
+                }
+            }
+
+            function focusNextInput(currentInput) {
+                focusRelativeInput(currentInput, 1);
+            }
+
+            function focusPreviousInput(currentInput) {
+                focusRelativeInput(currentInput, -1);
+            }
+
+            function bindEvents() {
+                var form = app.querySelector("#constitutionTestForm");
+                var resetButton = app.querySelector("[data-reset-button]");
+                var copyButton = app.querySelector("[data-copy-result]");
+                var copyStatus = app.querySelector("[data-copy-status]");
+
+                app.querySelectorAll('input[name="ctest-sex"]').forEach(function (radio) {
+                    radio.addEventListener("change", function () {
+                        setSexSelection(radio.value);
+                        updateState();
+                        var firstInput = app.querySelector(".ctest-answer:not(:disabled)");
+                        if (firstInput) {
+                            focusInput(firstInput);
+                        }
+                    });
+                });
+
+                app.querySelectorAll(".ctest-answer").forEach(function (input) {
+                    input.addEventListener("focus", function () {
+                        setActiveQuestion(input);
+                        scrollQuestionIntoView(input);
+                    });
+
+                    input.addEventListener("blur", function () {
+                        clearActiveQuestion(input);
+                    });
+
+                    input.addEventListener("keydown", function (event) {
+                        var key = event.key;
+                        if (event.altKey && (key === "ArrowLeft" || key === "Left")) {
+                            event.preventDefault();
+                            focusPreviousInput(input);
+                            return;
+                        }
+                        if (event.altKey && (key === "ArrowRight" || key === "Right")) {
+                            event.preventDefault();
+                            focusNextInput(input);
+                            return;
+                        }
+                        if (key === "Enter") {
+                            event.preventDefault();
+                            focusNextInput(input);
+                            return;
+                        }
+                        if (event.ctrlKey || event.metaKey || event.altKey) {
+                            return;
+                        }
+                        if (key.length !== 1) {
+                            return;
+                        }
+                        if (!/^[1-5]$/.test(key)) {
+                            event.preventDefault();
+                            setInputError(input, "Можно ввести только цифру 1, 2, 3, 4 или 5.");
+                            return;
+                        }
+                        event.preventDefault();
+                        input.value = key;
+                        validateInput(input, submitted);
+                        syncSexFromAnswer(input);
+                        updateState();
+                        focusNextInput(input);
+                    });
+
+                    input.addEventListener("paste", function (event) {
+                        var text = (event.clipboardData || window.clipboardData).getData("text").trim();
+                        event.preventDefault();
+                        if (/^[1-5]$/.test(text.charAt(0))) {
+                            input.value = text.charAt(0);
+                            validateInput(input, submitted);
+                            syncSexFromAnswer(input);
+                            updateState();
+                            focusNextInput(input);
+                            return;
+                        }
+                        setInputError(input, "Вставьте одну цифру от 1 до 5.");
+                        updateState();
+                    });
+
+                    input.addEventListener("input", function () {
+                        var value = input.value.trim();
+                        if (value.length > 1) {
+                            input.value = value.charAt(0);
+                        }
+                        validateInput(input, submitted);
+                        syncSexFromAnswer(input);
+                        updateState();
+                    });
+
+                    input.addEventListener("blur", function () {
+                        validateInput(input, submitted);
+                        updateState();
+                    });
+                });
+
+                form.addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    submitted = true;
+
+                    if (!isSexSelected()) {
+                        var sexStatus = app.querySelector("[data-sex-status]");
+                        var firstSex = app.querySelector('input[name="ctest-sex"]');
+                        if (sexStatus) {
+                            sexStatus.textContent = "Сначала выберите пол, затем заполните анкету.";
+                        }
+                        updateState();
+                        if (firstSex) {
+                            firstSex.focus();
+                            firstSex.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+                        }
+                        return;
+                    }
+
+                    var validation = validateAll(true);
+                    updateState();
+
+                    if (!validation.allValid) {
+                        var status = app.querySelector("[data-form-status]");
+                        if (status) {
+                            status.textContent = "Проверьте подсвеченные поля: нужны только цифры от 1 до 5.";
+                        }
+                        if (validation.firstInvalid) {
+                            validation.firstInvalid.focus();
+                        }
+                        return;
+                    }
+
+                    renderResults();
+                });
+
+                resetButton.addEventListener("click", function () {
+                    submitted = false;
+                    setSexSelection("");
+                    app.querySelectorAll(".ctest-answer").forEach(function (input) {
+                        input.value = "";
+                        clearInputError(input);
+                    });
+                    var result = app.querySelector("#constitutionTestResult");
+                    if (result) {
+                        result.hidden = true;
+                    }
+                    if (copyStatus) {
+                        copyStatus.textContent = "";
+                    }
+                    updateState();
+                    var firstSex = app.querySelector('input[name="ctest-sex"]');
+                    if (firstSex) {
+                        firstSex.focus();
+                    }
+                });
+
+                copyButton.addEventListener("click", function () {
+                    var message = app.querySelector("[data-result-message]");
+                    if (!message || !message.value) {
+                        return;
+                    }
+
+                    function done() {
+                        if (copyStatus) {
+                            copyStatus.textContent = "Итог скопирован. Откройте MAX и отправьте сообщение специалисту.";
+                        }
+                    }
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(message.value).then(done).catch(function () {
+                            message.focus();
+                            message.select();
+                            document.execCommand("copy");
+                            done();
+                        });
+                        return;
+                    }
+
+                    message.focus();
+                    message.select();
+                    document.execCommand("copy");
+                    done();
+                });
+            }
+
+            renderApp();
+            bindEvents();
+            applySexFieldState();
+            updateState();
+        })();
+    </script>
+</body>
+</html>
